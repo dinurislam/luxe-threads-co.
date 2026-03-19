@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from "react";
-import type { Product } from "@/data/products";
+import type { DbProduct } from "@/hooks/useProducts";
 
 export interface CartItem {
-  product: Product;
+  product: DbProduct;
   size: string;
   quantity: number;
 }
@@ -11,7 +11,7 @@ interface CartContextType {
   items: CartItem[];
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  addItem: (product: Product, size: string) => void;
+  addItem: (product: DbProduct, size: string) => void;
   removeItem: (productId: string, size: string) => void;
   updateQuantity: (productId: string, size: string, quantity: number) => void;
   totalItems: number;
@@ -25,7 +25,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const addItem = useCallback((product: Product, size: string) => {
+  const addItem = useCallback((product: DbProduct, size: string) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id && i.size === size);
       if (existing) {
