@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
-import type { Product } from "@/data/products";
+import type { DbProduct } from "@/hooks/useProducts";
 
 interface ProductCardProps {
-  product: Product;
+  product: DbProduct;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
@@ -13,22 +13,21 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product, product.sizes[0]);
+    addItem(product, product.sizes[0] || "M");
   };
 
   return (
     <Link to={`/product/${product.slug}`}>
-      <motion.div
-        whileHover="hover"
-        className="group relative flex flex-col gap-3"
-      >
+      <motion.div whileHover="hover" className="group relative flex flex-col gap-3">
         <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0"
-            loading="lazy"
-          />
+          {product.images[0] && (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+              loading="lazy"
+            />
+          )}
           {product.images[1] && (
             <img
               src={product.images[1]}
@@ -50,13 +49,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <div className="flex justify-between items-start px-1">
           <div>
             <h3 className="font-display text-sm uppercase tracking-tight">{product.name}</h3>
-            <p className="text-[11px] text-muted-foreground uppercase">{product.categoryName}</p>
+            <p className="text-[11px] text-muted-foreground uppercase">{product.categories?.name || ""}</p>
           </div>
           <div className="flex flex-col items-end">
             <span className="font-mono-price text-sm">৳{product.price.toLocaleString()}</span>
-            {product.compareAtPrice && (
+            {product.compare_at_price && (
               <span className="font-mono-price text-[10px] text-muted-foreground line-through">
-                ৳{product.compareAtPrice.toLocaleString()}
+                ৳{product.compare_at_price.toLocaleString()}
               </span>
             )}
           </div>
