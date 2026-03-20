@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import ProductCard from "@/components/product/ProductCard";
+import { ProductCardSkeleton } from "@/components/product/ProductCardSkeleton";
 import { useProducts, useCategories } from "@/hooks/useProducts";
 
 const SIZES = ["S", "M", "L", "XL", "XXL"];
@@ -43,7 +44,7 @@ const Shop = () => {
         <h1 className="font-display text-3xl uppercase">
           {searchQuery ? `Results for "${searchQuery}"` : categoryFilter ? categoryFilter.replace("-", " ") : "All Products"}
         </h1>
-        <p className="text-xs text-muted-foreground mt-2">{filtered.length} {filtered.length === 1 ? "item" : "items"}</p>
+        <p className="text-xs text-muted-foreground mt-2 font-body">{filtered.length} {filtered.length === 1 ? "item" : "items"}</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-10">
@@ -51,9 +52,9 @@ const Shop = () => {
           <div className="mb-8">
             <p className="text-[10px] uppercase tracking-premium text-muted-foreground mb-3">Category</p>
             <div className="flex flex-col gap-2">
-              <button onClick={() => setCategoryFilter("")} className={`text-xs text-left font-body ghost-slide ${!categoryFilter ? "text-foreground" : "text-muted-foreground"}`}>All</button>
+              <button onClick={() => setCategoryFilter("")} className={`text-xs text-left font-body ghost-slide ${!categoryFilter ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"}`}>All</button>
               {categories.map((cat) => (
-                <button key={cat.id} onClick={() => setCategoryFilter(cat.slug)} className={`text-xs text-left font-body ghost-slide ${categoryFilter === cat.slug ? "text-foreground" : "text-muted-foreground"}`}>
+                <button key={cat.id} onClick={() => setCategoryFilter(cat.slug)} className={`text-xs text-left font-body ghost-slide ${categoryFilter === cat.slug ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"}`}>
                   {cat.name}
                 </button>
               ))}
@@ -71,8 +72,9 @@ const Shop = () => {
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-premium text-muted-foreground mb-3">Price</p>
-            <input type="range" min={0} max={10000} step={500} value={priceRange[1]} onChange={(e) => setPriceRange([0, Number(e.target.value)])} className="w-full accent-foreground" />
-            <div className="flex justify-between mt-1">
+            <input type="range" min={0} max={10000} step={500} value={priceRange[1]} onChange={(e) => setPriceRange([0, Number(e.target.value)])}
+              className="w-full accent-foreground h-[2px] appearance-none bg-border [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:cursor-pointer" />
+            <div className="flex justify-between mt-2">
               <span className="font-mono-price text-[10px] text-muted-foreground">৳0</span>
               <span className="font-mono-price text-[10px] text-muted-foreground">৳{priceRange[1].toLocaleString()}</span>
             </div>
@@ -82,12 +84,10 @@ const Shop = () => {
         <div className="flex-1">
           {isLoading ? (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="aspect-[3/4] bg-secondary animate-pulse" />
-              ))}
+              {Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)}
             </div>
           ) : filtered.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-20">No products found.</p>
+            <p className="text-sm text-muted-foreground text-center py-20 font-body">No products found.</p>
           ) : (
             <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.06 } } }} className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
               {filtered.map((product) => (
