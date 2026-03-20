@@ -2,12 +2,11 @@ import { motion } from "framer-motion";
 import ProductCard from "@/components/product/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { Link } from "react-router-dom";
+import { ProductCardSkeleton } from "@/components/product/ProductCardSkeleton";
 
 const FeaturedProducts = () => {
-  const { data: products } = useProducts();
+  const { data: products, isLoading } = useProducts();
   const featured = (products || []).filter((p) => p.is_featured).slice(0, 4);
-
-  if (featured.length === 0) return null;
 
   return (
     <section className="px-6 lg:px-12 py-20">
@@ -20,17 +19,24 @@ const FeaturedProducts = () => {
           View All
         </Link>
       </div>
-      <motion.div
-        initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }}
-        variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
-      >
-        {featured.map((product) => (
-          <motion.div key={product.id} variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.2, 0, 0, 1] } } }}>
-            <ProductCard product={product} />
-          </motion.div>
-        ))}
-      </motion.div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          {[1, 2, 3, 4].map((i) => <ProductCardSkeleton key={i} />)}
+        </div>
+      ) : featured.length === 0 ? null : (
+        <motion.div
+          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }}
+          variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
+        >
+          {featured.map((product) => (
+            <motion.div key={product.id} variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.2, 0, 0, 1] } } }}>
+              <ProductCard product={product} />
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </section>
   );
 };
